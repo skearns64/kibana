@@ -17,6 +17,14 @@ export const GlobalXYChartStyles = () => {
         .echAnnotation {
           max-width: 500px !important;
         }
+
+        /* Override Elastic Charts tooltip table max-height which miscalculates
+           row heights, causing the last visible row to be partially clipped.
+           The maxTooltipItems setting already collapses the tooltip when there
+           are too many items, so this height constraint is unnecessary. */
+        .echTooltip__tableWrapper {
+          max-height: none !important;
+        }
       `}
     />
   );

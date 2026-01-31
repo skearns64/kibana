@@ -115,9 +115,10 @@ import { AxisExtentModes, SeriesTypes, ValueLabelModes, XScaleTypes } from '../.
 import { DataLayers } from './data_layers';
 import { Tooltip as CustomTooltip } from './tooltip';
 import { XYCurrentTime } from './xy_current_time';
-import { TooltipHeader } from './tooltip';
+import { TooltipHeader, TooltipCappedBody } from './tooltip';
 import { LegendColorPickerWrapperContext, LegendColorPickerWrapper } from './legend_color_picker';
 import { createSplitPoint, getTooltipActions, getXSeriesPoint } from './tooltip/tooltip_actions';
+import { getTooltipFooterComponent } from './tooltip/tooltip_stacked_footer';
 import { GlobalXYChartStyles } from './xy_chart.styles';
 
 declare global {
@@ -784,6 +785,9 @@ export function XYChart({
           <Chart ref={chartRef} {...getOverridesFor(overrides, 'chart')}>
             <Tooltip<Record<string, string | number>, XYChartSeriesIdentifier>
               boundary={appFixedViewport}
+              body={!args.detailedTooltip ? TooltipCappedBody : undefined}
+              // Disable EC's built-in truncation so the custom body handles capping.
+              maxTooltipItems={!args.detailedTooltip ? 1000 : undefined}
               headerFormatter={
                 !args.detailedTooltip && xAxisColumn
                   ? ({ value }) => (
@@ -826,6 +830,15 @@ export function XYChart({
                       />
                     )
                   : undefined
+              }
+              footer={
+                !args.detailedTooltip
+                  ? getTooltipFooterComponent({
+                      dataLayers,
+                      fieldFormats,
+                      formatFactory,
+                    })
+                  : 'default'
               }
               type={args.showTooltip ? TooltipType.VerticalCursor : TooltipType.None}
             />
